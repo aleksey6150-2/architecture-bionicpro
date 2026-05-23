@@ -41,6 +41,12 @@ services:
     ports:
       - "389:389"
       - "636:636"
+  redis:
+    image: redis:7-alpine
+    container_name: bionicpro-redis
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "6379:6379"
   frontend:
     build:
       context: ./frontend
@@ -48,7 +54,4 @@ services:
     ports:
       - "3000:3000"
     environment:
-      REACT_APP_API_URL: http://localhost:8000
-      REACT_APP_KEYCLOAK_URL: http://localhost:8080
-      REACT_APP_KEYCLOAK_REALM: reports-realm
-      REACT_APP_KEYCLOAK_CLIENT_ID: reports-frontend
+      REACT_APP_BFF_URL: http://localhost:9000
