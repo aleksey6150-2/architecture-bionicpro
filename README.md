@@ -5,5 +5,8 @@
 Решение задания 2:
 [README.md](Task2/README.md)
 
+Решение задания 3:
+[README.md](Task3/README.md)
 
-
+Решение задания 4:
+[README.md](Task4/README.md)

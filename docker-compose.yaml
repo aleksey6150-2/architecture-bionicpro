@@ -63,6 +63,15 @@ services:
   source-db:
     image: postgres:16
     container_name: bionicpro-source-db
+    # wal_level=logical + max_replication_slots — обязательное для Debezium
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_wal_senders=10"
+      - "-c"
+      - "max_replication_slots=10"
     environment:
       POSTGRES_DB: source
       POSTGRES_USER: source
@@ -81,7 +90,7 @@ services:
       CLICKHOUSE_PASSWORD: ch
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     volumes:
-      - ./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./clickhouse:/docker-entrypoint-initdb.d
     ports:
       - "8123:8123"
       - "9001:9000"
@@ -174,6 +183,76 @@ services:
       - cdn-cache:/var/cache/nginx
     ports:
       - "9080:80"
+
+  # =====================================================
+  # Часть 4: CDC — Debezium → Kafka → ClickHouse KafkaEngine
+  # =====================================================
+
+  kafka:
+    image: apache/kafka:3.8.0
+    container_name: bionicpro-kafka
+    # Apache KRaft (без Zookeeper), single-node
+    environment:
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+    ports:
+      - "9092:9092"
+
+  kafka-connect:
+    # Docker Hub mirror у debezium иногда отваливается с EOF, quay.io стабильнее
+    image: quay.io/debezium/connect:2.7.3.Final
+    container_name: bionicpro-kafka-connect
+    depends_on:
+      - kafka
+      - source-db
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: bionicpro-connect-cluster
+      CONFIG_STORAGE_TOPIC: connect_configs
+      OFFSET_STORAGE_TOPIC: connect_offsets
+      STATUS_STORAGE_TOPIC: connect_statuses
+      CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+      OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+      STATUS_STORAGE_REPLICATION_FACTOR: "1"
+      KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+    ports:
+      - "8083:8083"
+
+  # Одноразовая регистрация Debezium-коннектора в Kafka Connect
+  kafka-connect-init:
+    image: curlimages/curl:8.10.1
+    depends_on:
+      - kafka-connect
+    volumes:
+      - ./debezium:/debezium:ro
+    entrypoint: >
+      /bin/sh -c "
+      until curl -sf http://kafka-connect:8083/ >/dev/null 2>&1; do
+        echo 'Waiting for Kafka Connect...';
+        sleep 5;
+      done;
+      echo 'Kafka Connect ready, registering connector...';
+      curl -sS -X PUT -H 'Content-Type: application/json'
+        --data @/debezium/crm-connector.json
+        http://kafka-connect:8083/connectors/crm-connector/config;
+      echo;
+      echo 'Connector registered';
+      "
+    restart: "no"
 
 volumes:
   airflow-data: {}

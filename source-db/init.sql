@@ -81,6 +81,15 @@ FROM crm.prostheses p
 CROSS JOIN generate_series(1, 30) d(day_offset)
 CROSS JOIN generate_series(1, 50) e(event_idx);
 
+-- =====================================
+-- CDC: Debezium через pgoutput
+-- =====================================
+-- REPLICA IDENTITY FULL — чтобы в WAL писались все колонки старой строки,
+-- а не только PK. Это нужно Debezium'у для UPDATE/DELETE-событий,
+-- иначе он не сможет восстановить before-state.
+ALTER TABLE crm.customers  REPLICA IDENTITY FULL;
+ALTER TABLE crm.prostheses REPLICA IDENTITY FULL;
+
 -- Статистика после загрузки
 DO $$
 DECLARE

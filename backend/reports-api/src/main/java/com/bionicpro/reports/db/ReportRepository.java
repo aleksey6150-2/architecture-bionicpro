@@ -39,6 +39,9 @@ public class ReportRepository {
 
     public List<Map<String, Object>> findUserReport(String username, LocalDate maxDate) {
         try {
+            // user_report_mart_v2 — новая витрина из Task 4:
+            // CRM-данные приходят через CDC (Debezium → Kafka → KafkaEngine),
+            // телеметрия — батчем из Airflow, объединение в MV.
             String sql = """
                     SELECT toString(report_date) AS report_date_iso,
                            full_name, email, country_code,
@@ -47,7 +50,7 @@ public class ReportRepository {
                            total_movements, total_events,
                            avg_response_time_ms, max_response_time_ms,
                            battery_cycles, error_count
-                    FROM user_report_mart
+                    FROM user_report_mart_v2
                     WHERE username = '%s'
                       AND report_date <= toDate('%s')
                     ORDER BY report_date DESC
