@@ -55,3 +55,74 @@ services:
       - "3000:3000"
     environment:
       REACT_APP_BFF_URL: http://localhost:9000
+
+  # =====================================================
+  # Часть 2: данные и отчёты
+  # =====================================================
+
+  source-db:
+    image: postgres:16
+    container_name: bionicpro-source-db
+    environment:
+      POSTGRES_DB: source
+      POSTGRES_USER: source
+      POSTGRES_PASSWORD: source
+    volumes:
+      - ./source-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5434:5432"
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3
+    container_name: bionicpro-clickhouse
+    environment:
+      CLICKHOUSE_DB: bionicpro_olap
+      CLICKHOUSE_USER: ch
+      CLICKHOUSE_PASSWORD: ch
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - ./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "8123:8123"
+      - "9001:9000"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  airflow:
+    image: apache/airflow:2.10.4
+    container_name: bionicpro-airflow
+    command: standalone
+    depends_on:
+      - source-db
+      - clickhouse
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
+      _PIP_ADDITIONAL_REQUIREMENTS: "clickhouse-driver==0.2.9 psycopg2-binary==2.9.10"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - airflow-data:/opt/airflow
+    ports:
+      - "8082:8080"
+
+  reports-api:
+    build:
+      context: ./backend/reports-api
+      dockerfile: Dockerfile
+    container_name: bionicpro-reports-api
+    depends_on:
+      - clickhouse
+      - keycloak
+    environment:
+      CLICKHOUSE_URL: jdbc:clickhouse://clickhouse:8123/bionicpro_olap?compress=0
+      CLICKHOUSE_USER: ch
+      CLICKHOUSE_PASSWORD: ch
+      KEYCLOAK_JWKS_URI: http://keycloak:8080/realms/reports-realm/protocol/openid-connect/certs
+    ports:
+      - "8000:8000"
+
+volumes:
+  airflow-data: {}
