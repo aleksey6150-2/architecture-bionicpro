@@ -1,0 +1,43 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: reports-api
+
+  datasource:
+    # compress=0 — отключаем LZ4 (требует lz4-java на classpath)
+    url: ${CLICKHOUSE_URL:jdbc:clickhouse://localhost:8123/bionicpro_olap?compress=0}
+    username: ${CLICKHOUSE_USER:ch}
+    password: ${CLICKHOUSE_PASSWORD:ch}
+    driver-class-name: com.clickhouse.jdbc.ClickHouseDriver
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # ВАЖНО: только jwk-set-uri, без issuer-uri.
+          # JWT выпускается Keycloak с iss=http://localhost:8080/realms/reports-realm
+          # (BFF ходит на localhost), а reports-api в docker-сети видит keycloak:8080.
+          # Без issuer-uri Spring валидирует только подпись и срок, не сверяя issuer URL.
+          jwk-set-uri: ${KEYCLOAK_JWKS_URI:http://keycloak:8080/realms/reports-realm/protocol/openid-connect/certs}
+
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9090}
+  access-key: ${MINIO_ACCESS_KEY:minio_user}
+  secret-key: ${MINIO_SECRET_KEY:minio_password}
+  bucket: ${MINIO_BUCKET:reports-bucket}
+
+cdn:
+  base-url: ${CDN_BASE_URL:http://localhost:9080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+logging:
+  level:
+    org.springframework.security: INFO
+    com.bionicpro.reports: DEBUG

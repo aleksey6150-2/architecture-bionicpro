@@ -1,0 +1,176 @@
+<mxfile host="Electron" agent="bionicpro-sprint9-task4">
+  <diagram name="Page-1" id="task4-cdc-pipeline">
+    <mxGraphModel dx="1204" dy="803" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1300" background="light-dark(#FFFFFF,#FFFFFF)" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <object placeholders="1" c4Name="BionicPRO" c4Type="SystemScopeBoundary" c4Application="CDC pipeline (CRM → ClickHouse)" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;&lt;div style=&quot;text-align: left&quot;&gt;%c4Name%&lt;/div&gt;&lt;/b&gt;&lt;/font&gt;&lt;div style=&quot;text-align: left&quot;&gt;[%c4Application%]&lt;/div&gt;" id="bp-bionicpro">
+          <mxCell parent="1" style="rounded=1;fontSize=11;whiteSpace=wrap;html=1;dashed=1;arcSize=20;fillColor=none;strokeColor=#666666;fontColor=#333333;labelBackgroundColor=none;align=left;verticalAlign=bottom;labelBorderColor=none;spacingTop=0;spacing=10;dashPattern=8 4;metaEdit=1;rotatable=0;perimeter=rectanglePerimeter;noLabel=0;labelPadding=0;allowArrows=0;connectable=0;expand=0;recursiveResize=0;editable=1;pointerEvents=0;absoluteArcSize=1;" vertex="1">
+            <mxGeometry height="1280" width="1900" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="ClickHouse (OLAP)" c4Type="Container" c4Technology="ClickHouse 24" label="&lt;font style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;&lt;div style=&quot;text-align: left&quot;&gt;%c4Name%&lt;/div&gt;&lt;/b&gt;&lt;/font&gt;&lt;div style=&quot;text-align: left&quot;&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;" id="bp-ch-boundary">
+          <mxCell parent="1" style="rounded=1;fontSize=11;whiteSpace=wrap;html=1;dashed=1;arcSize=20;fillColor=#E8F4FB;strokeColor=#0E7DAD;fontColor=#0E7DAD;labelBackgroundColor=none;align=left;verticalAlign=bottom;labelBorderColor=none;spacingTop=0;spacing=10;dashPattern=8 4;metaEdit=1;rotatable=0;perimeter=rectanglePerimeter;noLabel=0;labelPadding=0;allowArrows=0;connectable=0;expand=0;recursiveResize=0;editable=1;pointerEvents=0;absoluteArcSize=1;" vertex="1">
+            <mxGeometry height="1120" width="820" x="1020" y="40" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="CRM Postgres" c4Type="Container" c4Technology="PostgreSQL 16, wal_level=logical" c4Description="OLTP CRM. Изменения захватываются Debezium из WAL — никакого SELECT-нагрузки от аналитики" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-crm-pg">
+          <mxCell parent="1" style="shape=cylinder3;size=15;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;fontSize=12;fontColor=#ffffff;align=center;strokeColor=#0E7DAD;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="160" width="260" x="40" y="200" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="Telemetry DB" c4Type="Container" c4Technology="PostgreSQL 16" c4Description="OLTP для событий протезов. Airflow читает агрегаты раз в сутки (CRM не трогается)" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-tel-pg">
+          <mxCell parent="1" style="shape=cylinder3;size=15;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;fontSize=12;fontColor=#ffffff;align=center;strokeColor=#0E7DAD;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="160" width="260" x="40" y="900" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="Kafka Connect" c4Type="Container" c4Technology="quay.io/debezium/connect 2.7" c4Description="Хост для Debezium PostgresConnector. Читает WAL через pgoutput, публикует change-events" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-connect">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#1061B0;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0D5091;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="140" width="260" x="380" y="220" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="Kafka" c4Type="Container" c4Technology="apache/kafka 3.8 (KRaft)" c4Description="Топики crm.crm.customers, crm.crm.prostheses (плоский JSON после SMT unwrap)" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-kafka">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#1061B0;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0D5091;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="140" width="260" x="700" y="220" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="kafka_crm_customers" c4Type="Component" c4Technology="Kafka engine" c4Description="JSONEachRow consumer для crm.crm.customers" label="&lt;font style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-kafkaeng-customers">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;labelBackgroundColor=none;fillColor=#23A2D9;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0E7DAD;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="110" width="220" x="1050" y="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="kafka_crm_prostheses" c4Type="Component" c4Technology="Kafka engine" c4Description="JSONEachRow consumer для crm.crm.prostheses" label="&lt;font style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-kafkaeng-prostheses">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;labelBackgroundColor=none;fillColor=#23A2D9;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0E7DAD;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="110" width="220" x="1050" y="260" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="crm_customers_latest" c4Type="Component" c4Technology="ReplacingMergeTree" c4Description="Актуальный срез CRM customers. version = __source_ts_ms" label="&lt;font style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-customers-latest">
+          <mxCell parent="1" style="shape=cylinder3;size=15;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;fontSize=11;fontColor=#ffffff;align=center;strokeColor=#0E7DAD;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="110" width="220" x="1350" y="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="crm_prostheses_latest" c4Type="Component" c4Technology="ReplacingMergeTree" c4Description="Актуальный срез CRM prostheses" label="&lt;font style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-prostheses-latest">
+          <mxCell parent="1" style="shape=cylinder3;size=15;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;fontSize=11;fontColor=#ffffff;align=center;strokeColor=#0E7DAD;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="110" width="220" x="1350" y="260" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="telemetry_daily_agg" c4Type="Component" c4Technology="ReplacingMergeTree" c4Description="Агрегаты телеметрии за день. Заполняется Airflow. INSERT триггерит MV → mart_v2" label="&lt;font style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-tel-agg">
+          <mxCell parent="1" style="shape=cylinder3;size=15;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;fontSize=11;fontColor=#ffffff;align=center;strokeColor=#0E7DAD;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="110" width="220" x="1050" y="560" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="user_report_mart_v2" c4Type="Component" c4Technology="MergeTree" c4Description="Денормализованная витрина (та же структура что у v1). Заполняется MV-ом через JOIN telemetry + crm_*_latest FINAL" label="&lt;font style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-mart-v2">
+          <mxCell parent="1" style="shape=cylinder3;size=15;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;fontSize=11;fontColor=#ffffff;align=center;strokeColor=#0E7DAD;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="140" width="240" x="1350" y="560" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="Airflow" c4Type="Container" c4Technology="Apache Airflow 2.10" c4Description="DAG user_report_etl @daily. Читает ТОЛЬКО telemetry.events, агрегирует, пишет в telemetry_daily_agg. CRM не трогается" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-airflow">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#1061B0;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0D5091;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="140" width="260" x="380" y="920" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="reports-api" c4Type="Container" c4Technology="Java 25, Spring Boot 4" c4Description="Читает витрину mart_v2 (один SELECT с фильтром по username из JWT)" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%: %c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bp-reports-api">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#23A2D9;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0E7DAD;metaEdit=1;resizable=0;" vertex="1">
+            <mxGeometry height="140" width="240" x="1350" y="940" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="e-crm-debezium" edge="1" parent="1" source="bp-crm-pg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-connect">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-crm-debezium-l" connectable="0" parent="e-crm-debezium" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="logical replication&#xa;(WAL via pgoutput)" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-debezium-kafka" edge="1" parent="1" source="bp-connect" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-kafka">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-debezium-kafka-l" connectable="0" parent="e-debezium-kafka" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="produce&#xa;(SMT unwrap → flat JSON)" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-kafka-cust" edge="1" parent="1" source="bp-kafka" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-kafkaeng-customers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kafka-cust-l" connectable="0" parent="e-kafka-cust" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="consume topic&#xa;crm.crm.customers" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-kafka-pros" edge="1" parent="1" source="bp-kafka" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-kafkaeng-prostheses">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kafka-pros-l" connectable="0" parent="e-kafka-pros" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="consume topic&#xa;crm.crm.prostheses" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-keng-cust-latest" edge="1" parent="1" source="bp-kafkaeng-customers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-customers-latest">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-keng-cust-latest-l" connectable="0" parent="e-keng-cust-latest" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="MV" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-keng-pros-latest" edge="1" parent="1" source="bp-kafkaeng-prostheses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-prostheses-latest">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-keng-pros-latest-l" connectable="0" parent="e-keng-pros-latest" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="MV" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-tel-airflow" edge="1" parent="1" source="bp-tel-pg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-airflow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-tel-airflow-l" connectable="0" parent="e-tel-airflow" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="SELECT telemetry.events&#xa;(агрегаты)" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-airflow-agg" edge="1" parent="1" source="bp-airflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-tel-agg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-airflow-agg-l" connectable="0" parent="e-airflow-agg" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="INSERT" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-agg-mart" edge="1" parent="1" source="bp-tel-agg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-mart-v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-agg-mart-l" connectable="0" parent="e-agg-mart" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="MV: JOIN с crm_*_latest FINAL" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-cust-mart" edge="1" parent="1" source="bp-customers-latest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#000000;fontColor=#000000;" target="bp-mart-v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-cust-mart-l" connectable="0" parent="e-cust-mart" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="JOIN FINAL" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-pros-mart" edge="1" parent="1" source="bp-prostheses-latest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#000000;fontColor=#000000;" target="bp-mart-v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-pros-mart-l" connectable="0" parent="e-pros-mart" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="JOIN FINAL" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-api-mart" edge="1" parent="1" source="bp-reports-api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;fontColor=#000000;" target="bp-mart-v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-api-mart-l" connectable="0" parent="e-api-mart" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="SELECT WHERE username = JWT.sub" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

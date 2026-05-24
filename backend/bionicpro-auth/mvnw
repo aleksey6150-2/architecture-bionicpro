@@ -1,0 +1,38 @@
+#!/bin/sh
+# Minimal Maven Wrapper (script-only). Downloads Maven to ~/.m2/wrapper/dists on first run.
+set -e
+
+BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROPS="$BASE_DIR/.mvn/wrapper/maven-wrapper.properties"
+[ -f "$PROPS" ] || { echo "Missing $PROPS" >&2; exit 1; }
+
+DIST_URL=$(awk -F= '/^distributionUrl=/{sub(/^distributionUrl=/,""); print; exit}' "$PROPS")
+[ -n "$DIST_URL" ] || { echo "distributionUrl not set in $PROPS" >&2; exit 1; }
+
+CACHE="${HOME}/.m2/wrapper/dists"
+ZIP_NAME=$(basename "$DIST_URL")
+DIST_DIR="$CACHE/${ZIP_NAME%.zip}"
+
+MVN_BIN=$(find "$DIST_DIR" -path "*/bin/mvn" -type f 2>/dev/null | head -1)
+
+if [ -z "$MVN_BIN" ] || [ ! -x "$MVN_BIN" ]; then
+    mkdir -p "$DIST_DIR"
+    echo "Downloading Maven from $DIST_URL ..." >&2
+    if command -v curl >/dev/null 2>&1; then
+        curl -fSL --retry 3 "$DIST_URL" -o "$DIST_DIR/$ZIP_NAME"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q "$DIST_URL" -O "$DIST_DIR/$ZIP_NAME"
+    else
+        echo "Need curl or wget to download Maven" >&2; exit 1
+    fi
+    (cd "$DIST_DIR" && unzip -q "$ZIP_NAME" && rm -f "$ZIP_NAME")
+    MVN_BIN=$(find "$DIST_DIR" -path "*/bin/mvn" -type f 2>/dev/null | head -1)
+    [ -x "$MVN_BIN" ] || { echo "mvn not found after extraction" >&2; exit 1; }
+fi
+
+if [ -z "$JAVA_HOME" ] && [ -x /usr/libexec/java_home ]; then
+    JAVA_HOME=$(/usr/libexec/java_home)
+    export JAVA_HOME
+fi
+
+exec "$MVN_BIN" "$@"
