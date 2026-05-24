@@ -43,21 +43,34 @@ const ReportPage: React.FC = () => {
     setReportLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${BFF_URL}/api/reports`, {
+      // Шаг 1. Берём CDN-ссылку у reports-api (через BFF).
+      // reports-api: либо берёт готовый отчёт из S3, либо генерит и кладёт туда.
+      const metaResp = await fetch(`${BFF_URL}/api/reports`, {
         credentials: 'include',
       });
-      if (response.status === 401) {
+      if (metaResp.status === 401) {
         setUser(null);
         return;
       }
-      if (!response.ok) {
-        throw new Error(`Report failed: ${response.status}`);
+      if (!metaResp.ok) {
+        throw new Error(`Report metadata failed: ${metaResp.status}`);
       }
-      const blob = await response.blob();
+      const meta = await metaResp.json();
+      if (!meta.report_url) {
+        throw new Error(meta.note || 'Report not available yet');
+      }
+
+      // Шаг 2. Качаем сам JSON с CDN (Nginx → Minio).
+      // Cookie сюда не нужен — bucket с публичным read через CDN.
+      const blob = await fetch(meta.report_url).then((r) => {
+        if (!r.ok) throw new Error(`CDN fetch failed: ${r.status}`);
+        return r.blob();
+      });
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'report';
+      a.download = `report-${meta.period_to}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();

@@ -22,6 +22,15 @@ spring:
           # Без issuer-uri Spring валидирует только подпись и срок, не сверяя issuer URL.
           jwk-set-uri: ${KEYCLOAK_JWKS_URI:http://keycloak:8080/realms/reports-realm/protocol/openid-connect/certs}
 
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9090}
+  access-key: ${MINIO_ACCESS_KEY:minio_user}
+  secret-key: ${MINIO_SECRET_KEY:minio_password}
+  bucket: ${MINIO_BUCKET:reports-bucket}
+
+cdn:
+  base-url: ${CDN_BASE_URL:http://localhost:9080}
+
 management:
   endpoints:
     web:
